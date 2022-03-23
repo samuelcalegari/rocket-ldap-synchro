@@ -2,7 +2,7 @@
 
 ## Introduction
 
-**rocket-ldap-synchro** is a python program wich synchronize LDAP users and RocketChat local users by using RocketChat API. 
+**rocket-ldap-synchro** is a python program which synchronize LDAP users and RocketChat local users by using RocketChat API. 
 
 ## Installation
 
@@ -10,7 +10,7 @@
 
 ## Configuration
 A new role must be added in RocketChat (example : ldap-user) and set in config.py file.
-Set properties and in the folowing files : credendials.py and config.py
+Set properties and auth information in the following files : credendials.py and config.py
 
 ## Usage
 
