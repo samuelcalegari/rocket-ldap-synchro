@@ -11,9 +11,6 @@ rocket = RocketChat(credentials['rocket']['user'],
 
 rocketUsers = rocket.users_list(query='{"roles":"' + config['rocket']['ldap_role_id'] + '"}').json().get('users')
 
-u = list(filter(lambda user: user['username'] == 'sgarry', rocketUsers))
-print(u[0]['_id'])
-
 rocketUsersName = []
 for rocketUser in rocketUsers:
     rocketUsersName.append(rocketUser['username'])
