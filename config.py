@@ -6,7 +6,7 @@ config = {
     },
     'rocket': {
         'server': '',
-        'ldap_role_id': ''  # Specific role must my create in rocketChat before
+        'ldap_role_id': ''  # Specific role must be create in rocketChat before
     },
     'rocket_remaining_user_action': 'delete'  # delete, disable, none
 }
