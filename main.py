@@ -1,7 +1,8 @@
 from ldap3 import Server, Connection, SAFE_SYNC
 from rocketchat_API.rocketchat import RocketChat
-from credentials import credentials
-from config import config
+import credentials
+import config
+import secrets
 
 # Get Existing Users From RocketChat
 rocket = RocketChat(credentials['rocket']['user'],
@@ -45,7 +46,8 @@ if status:
         if not entry['attributes']['uid'][0] in rocketUsersName:
             # User in RocketChat not exists : create it
             rocket.users_create(entry['attributes']['mail'][0],
-                                entry['attributes']['givenName'][0] + ' ' + entry['attributes']['sn'][0], 'zzzz9999zzzz',
+                                entry['attributes']['givenName'][0] + ' ' + entry['attributes']['sn'][0],
+                                secrets.token_urlsafe(16),
                                 entry['attributes']['uid'][0],
                                 roles=['user', config['rocket']['ldap_role_id']])
             total_users_created = total_users_created + 1
