@@ -1,6 +1,6 @@
 from ldap3 import Server, Connection, SAFE_SYNC
 from rocketchat_API.rocketchat import RocketChat
-from credential import credentials
+from credentials import credentials
 from config import config
 
 # Get Existing Users From RocketChat
