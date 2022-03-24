@@ -3,6 +3,10 @@ config = {
         'server': '',
         'base': '',  # dc=mycompany,dc=en
         'filter': '',  # (&(departmentNumber=SALES)(enabled=TRUE))
+        'userid_field': '',  # uid
+        'lastname_field': '',  # sn
+        'firstname_field': '',  # givenName
+        'email_field': '',  # mail
     },
     'rocket': {
         'server': '',

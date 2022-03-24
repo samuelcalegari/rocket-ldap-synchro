@@ -1,7 +1,7 @@
 from ldap3 import Server, Connection, SAFE_SYNC
 from rocketchat_API.rocketchat import RocketChat
-import credentials
-import config
+from credentials import credentials
+from config import config
 import secrets
 
 # Get Existing Users From RocketChat
@@ -27,10 +27,10 @@ conn = Connection(ldapServer,
 
 status, result, response, _ = conn.search(config['ldap']['base'],
                                           config['ldap']['filter'],
-                                          attributes=['uid',
-                                                      'sn',
-                                                      'givenName',
-                                                      'mail'])
+                                          attributes=[config['ldap']['userid_field'],
+                                                      config['ldap']['lastname_field'],
+                                                      config['ldap']['firstname_field'],
+                                                      config['ldap']['email_field']])
 if status:
 
     total_entries = len(response)
@@ -40,35 +40,40 @@ if status:
 
     # Fetch users from LDAP
     for entry in response:
-        if not entry['attributes']['uid'][0] in rocketUsersName:
+        username = entry['attributes'][config['ldap']['userid_field']][0]
+        email = entry['attributes'][config['ldap']['email_field']][0]
+        firstname = entry['attributes'][config['ldap']['firstname_field']][0]
+        lastname = entry['attributes'][config['ldap']['lastname_field']][0]
+        role = config['rocket']['ldap_role_id']
+        if not username in rocketUsersName:
             # User in RocketChat not exists : create it
-            rocket.users_create(entry['attributes']['mail'][0],
-                                entry['attributes']['givenName'][0] + ' ' + entry['attributes']['sn'][0],
+            rocket.users_create(email,
+                                firstname + ' ' + lastname,
                                 secrets.token_urlsafe(16),
-                                entry['attributes']['uid'][0],
-                                roles=['user', config['rocket']['ldap_role_id']])
+                                username,
+                                roles=['user', role])
             total_users_created = total_users_created + 1
-            print('Utilisateur', entry['attributes']['uid'][0], 'crée')
+            print('Utilisateur', username, 'crée')
         else:
             # User in RocketChat exists : remove from list
-            rocketUsersName.remove(entry['attributes']['uid'][0])
+            rocketUsersName.remove(username)
 
     # Delete or disable users who are in the list (user are in RocketChat, but not in LDAP anymore)
     if config['rocket_remaining_user_action'] == 'delete':
         for userName in rocketUsersName:
-            u = list(filter(lambda user: user['username'] == entry['attributes']['uid'][0], rocketUsers))
+            u = list(filter(lambda user: user['username'] == userName, rocketUsers))
             if u:
                 rocket.users_delete(u[0]['_id'])
                 total_users_deleted = total_users_deleted + 1
-                print('Utilisateur', entry['attributes']['uid'][0], 'supprimé')
+                print('Utilisateur', userName, 'supprimé')
 
     if config['rocket_remaining_user_action'] == 'disable':
         for userName in rocketUsersName:
-            u = list(filter(lambda user: user['username'] == entry['attributes']['uid'][0], rocketUsers))
+            u = list(filter(lambda user: user['username'] == userName, rocketUsers))
             if u:
                 rocket.users_set_active_status(u[0]['_id'], False)
                 total_users_disabled = total_users_disabled + 1
-                print('Utilisateur', entry['attributes']['uid'][0], 'désactivé')
+                print('Utilisateur', userName, 'désactivé')
 
     # Display Infos
     print('Total des entrées :', total_entries)
@@ -78,4 +83,3 @@ if status:
 else:
 
     print('Une erreur est survenue lors de la connexion au serveur LDAP')
-
