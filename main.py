@@ -79,6 +79,7 @@ if status:
     print('Total des entrées :', total_entries)
     print('Total des utilisateurs crées :', total_users_created)
     print('Total des utilisateurs supprimés :', total_users_deleted)
+    print('Total des utilisateurs désactivés :', total_users_disabled)
 
 else:
 
