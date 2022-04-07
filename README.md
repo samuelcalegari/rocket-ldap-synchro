@@ -9,9 +9,13 @@
     pip install -r requirements.txt
 
 ## Configuration
-A new role must be added in RocketChat (example : ldap-user) and set in config.py file.
-Rename config-sample.py to config.py and credentials-sample.py to credentials.py
-Set properties and auth information in the following files : credendials.py and config.py
+- A new role must be added in RocketChat (example : ldap-user) and set in config.py file.
+
+
+- Rename config-sample.py to config.py and credentials-sample.py to credentials.py
+
+
+- Set properties and auth information in the following files : credendials.py and config.py
 
 ## Usage
 
