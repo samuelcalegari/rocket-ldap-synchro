@@ -9,7 +9,7 @@ rocket = RocketChat(credentials['rocket']['user'],
                     credentials['rocket']['pass'],
                     server_url=config['rocket']['server'])
 
-rocketUsers = rocket.users_list(query='{"roles":"' + config['rocket']['ldap_role_id'] + '"}').json().get('users')
+rocketUsers = rocket.users_list(count=0, query='{"roles":"' + config['rocket']['ldap_role_id'] + '"}').json().get('users')
 
 rocketUsersName = []
 for rocketUser in rocketUsers:
@@ -23,7 +23,6 @@ conn = Connection(ldapServer,
                   credentials['ldap']['pass'],
                   client_strategy=SAFE_SYNC,
                   auto_bind=True)
-
 
 status, result, response, _ = conn.search(config['ldap']['base'],
                                           config['ldap']['filter'],
@@ -40,20 +39,26 @@ if status:
 
     # Fetch users from LDAP
     for entry in response:
-        username = entry['attributes'][config['ldap']['userid_field']][0]
-        email = entry['attributes'][config['ldap']['email_field']][0]
-        firstname = entry['attributes'][config['ldap']['firstname_field']][0]
-        lastname = entry['attributes'][config['ldap']['lastname_field']][0]
+        username = entry['attributes'][config['ldap']['userid_field']][0] if (len(
+            entry['attributes'][config['ldap']['userid_field']]) != 0) else ""
+        email = entry['attributes'][config['ldap']['email_field']][0] if (len(
+            entry['attributes'][config['ldap']['email_field']]) != 0) else ""
+        firstname = entry['attributes'][config['ldap']['firstname_field']][0] if (len(
+            entry['attributes'][config['ldap']['firstname_field']]) != 0) else ""
+        lastname = entry['attributes'][config['ldap']['lastname_field']][0] if (len(
+            entry['attributes'][config['ldap']['lastname_field']]) != 0) else ""
         role = config['rocket']['ldap_role_id']
+
+        # User in RocketChat not exists : create it
         if not username in rocketUsersName:
-            # User in RocketChat not exists : create it
-            rocket.users_create(email,
-                                firstname + ' ' + lastname,
-                                secrets.token_urlsafe(16),
-                                username,
-                                roles=['user', role])
-            total_users_created = total_users_created + 1
-            print('Utilisateur', username, 'crée')
+            if username != "" and email != "" and firstname != "" and lastname != "":
+                rocket.users_create(email,
+                                    firstname + ' ' + lastname,
+                                    secrets.token_urlsafe(16),
+                                    username,
+                                    roles=['user', role])
+                total_users_created = total_users_created + 1
+                print('Utilisateur', username, 'crée')
         else:
             # User in RocketChat exists : remove from list
             rocketUsersName.remove(username)

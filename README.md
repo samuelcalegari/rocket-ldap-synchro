@@ -24,7 +24,7 @@ or
     
     py main.py
 ## Version
-Current Version : 1.0 (23032022)
+Current Version : 1.1 (12092022)
 
 ## Licence
 
