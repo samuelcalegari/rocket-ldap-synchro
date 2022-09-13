@@ -52,13 +52,14 @@ if status:
         # User in RocketChat not exists : create it
         if not username in rocketUsersName:
             if username != "" and email != "" and firstname != "" and lastname != "":
-                rocket.users_create(email,
+                status = rocket.users_create(email,
                                     firstname + ' ' + lastname,
                                     secrets.token_urlsafe(16),
                                     username,
                                     roles=['user', role])
-                total_users_created = total_users_created + 1
-                print('Utilisateur', username, 'crée')
+                if status.json().get('success'):
+                    total_users_created = total_users_created + 1
+                    print('Utilisateur', username, 'crée')
         else:
             # User in RocketChat exists : remove from list
             rocketUsersName.remove(username)
