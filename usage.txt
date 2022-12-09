@@ -3,3 +3,5 @@ pip3 install -r requirements.txt
 
 # Launch
 python3 sync-users.py
+python3 sync-groups.py
+python3 sync-roles.py

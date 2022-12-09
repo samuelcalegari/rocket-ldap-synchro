@@ -9,6 +9,7 @@ rocket = RocketChat(credentials['rocket']['user'],
                     credentials['rocket']['pass'],
                     server_url=config['rocket']['server'])
 
+# Get All Rocket Groups
 rocketAllGroups = {}
 rocketOwnerAllGroups = {}
 groups = rocket.groups_list_all().json().get('groups')
@@ -16,6 +17,7 @@ for group in groups:
     rocketAllGroups[group['name']] = group['_id']
     rocketOwnerAllGroups[group['name']] = group['u']['username']
 
+# Get All Rocket Users
 rocketAllUsers = {}
 users = rocket.users_list(count=0).json().get('users')
 for user in users:
