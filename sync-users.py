@@ -9,7 +9,14 @@ rocket = RocketChat(credentials['rocket']['user'],
                     credentials['rocket']['pass'],
                     server_url=config['rocket']['server'])
 
-rocketUsers = rocket.users_list(count=0, query='{"roles":"' + config['rocket']['ldap_role_id'] + '"}').json().get('users')
+ldap_role = config['rocket']['ldap_role_id']
+roles = ['user']
+
+if ldap_role != "":
+    rocketUsers = rocket.users_list(count=0, query='{"roles":"' + config['rocket']['ldap_role_id'] + '"}').json().get('users')
+    roles.append(ldap_role)
+else:
+    rocketUsers = rocket.users_list(count=0).json().get('users')
 
 rocketUsersName = []
 for rocketUser in rocketUsers:
@@ -47,7 +54,6 @@ if status:
             entry['attributes'][config['ldap']['firstname_field']]) != 0) else ""
         lastname = entry['attributes'][config['ldap']['lastname_field']][0] if (len(
             entry['attributes'][config['ldap']['lastname_field']]) != 0) else ""
-        role = config['rocket']['ldap_role_id']
 
         # User in RocketChat not exists : create it
         if not username in rocketUsersName:
@@ -56,7 +62,7 @@ if status:
                                     firstname + ' ' + lastname,
                                     secrets.token_urlsafe(16),
                                     username,
-                                    roles=['user', role])
+                                    roles=roles)
                 if status.json().get('success'):
                     total_users_created = total_users_created + 1
                     print('Utilisateur', username, 'crée')
