@@ -82,12 +82,14 @@ for key in data.keys():
             for ldapMember in ldapMembers:
                 # Add member if exist in ldap and not in rocket
                 if ldapMember not in rocketMembers.keys():
-                    rocket.groups_invite(rocketAllGroups[rocketCardGroup], rocketAllUsers[ldapMember])
-                    print('Ajout de ' + ldapMember + ' dans le groupe ' + rocketCardGroup)
+                    if ldapMember not in config['rocket']['exclude_users_for_sync']:
+                        rocket.groups_invite(rocketAllGroups[rocketCardGroup], rocketAllUsers[ldapMember])
+                        print('Ajout de ' + ldapMember + ' dans le groupe ' + rocketCardGroup)
 
                 tmp.remove(ldapMember)
 
             # users still in tmp must be removed
             for userToDelete in tmp:
-                rocket.groups_kick(rocketAllGroups[rocketCardGroup], rocketAllUsers[userToDelete])
-                print('Suppression de ' + userToDelete + ' dans le groupe ' + rocketCardGroup)
+                if userToDelete not in config['rocket']['exclude_users_for_sync']:
+                    rocket.groups_kick(rocketAllGroups[rocketCardGroup], rocketAllUsers[userToDelete])
+                    print('Suppression de ' + userToDelete + ' dans le groupe ' + rocketCardGroup)

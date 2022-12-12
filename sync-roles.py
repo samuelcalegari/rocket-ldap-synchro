@@ -50,8 +50,9 @@ for key in data.keys():
     for rocketCardRole in rocketCardRoles:
         for ldapMember in ldapMembers:
             # Add role to member
-            rocket.roles_add_user_to_role(rocketCardRole, ldapMember)
-            print('Ajout du rôle ' + rocketCardRole + ' à l\'utilisateur ' + ldapMember)
+            if ldapMember not in config['rocket']['exclude_users_for_sync']:
+                rocket.roles_add_user_to_role(rocketCardRole, ldapMember)
+                print('Ajout du rôle ' + rocketCardRole + ' à l\'utilisateur ' + ldapMember)
 
 
 

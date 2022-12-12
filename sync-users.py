@@ -56,16 +56,17 @@ if status:
             entry['attributes'][config['ldap']['lastname_field']]) != 0) else ""
 
         # User in RocketChat not exists : create it
-        if not username in rocketUsersName:
+        if username not in rocketUsersName:
             if username != "" and email != "" and firstname != "" and lastname != "":
-                status = rocket.users_create(email,
-                                    firstname + ' ' + lastname,
-                                    secrets.token_urlsafe(16),
-                                    username,
-                                    roles=roles)
-                if status.json().get('success'):
-                    total_users_created = total_users_created + 1
-                    print('Utilisateur', username, 'crée')
+                if username not in config['rocket']['exclude_users_for_sync']:
+                    status = rocket.users_create(email,
+                                        firstname + ' ' + lastname,
+                                        secrets.token_urlsafe(16),
+                                        username,
+                                        roles=roles)
+                    if status.json().get('success'):
+                        total_users_created = total_users_created + 1
+                        print('Utilisateur', username, 'crée')
         else:
             # User in RocketChat exists : remove from list
             rocketUsersName.remove(username)
@@ -73,19 +74,21 @@ if status:
     # Delete or disable users who are in the list (user are in RocketChat, but not in LDAP anymore)
     if config['rocket_remaining_user_action'] == 'delete':
         for userName in rocketUsersName:
-            u = list(filter(lambda user: user['username'] == userName, rocketUsers))
-            if u:
-                rocket.users_delete(u[0]['_id'])
-                total_users_deleted = total_users_deleted + 1
-                print('Utilisateur', userName, 'supprimé')
+            if userName not in config['rocket']['exclude_users_for_sync']:
+                u = list(filter(lambda user: user['username'] == userName, rocketUsers))
+                if u:
+                    rocket.users_delete(u[0]['_id'])
+                    total_users_deleted = total_users_deleted + 1
+                    print('Utilisateur', userName, 'supprimé')
 
     if config['rocket_remaining_user_action'] == 'disable':
         for userName in rocketUsersName:
-            u = list(filter(lambda user: user['username'] == userName, rocketUsers))
-            if u:
-                rocket.users_set_active_status(u[0]['_id'], False)
-                total_users_disabled = total_users_disabled + 1
-                print('Utilisateur', userName, 'désactivé')
+            if userName not in config['rocket']['exclude_users_for_sync']:
+                u = list(filter(lambda user: user['username'] == userName, rocketUsers))
+                if u:
+                    rocket.users_set_active_status(u[0]['_id'], False)
+                    total_users_disabled = total_users_disabled + 1
+                    print('Utilisateur', userName, 'désactivé')
 
     # Display Infos
     print('Total des entrées :', total_entries)

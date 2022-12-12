@@ -13,7 +13,8 @@ config = {
     },
     'rocket': {
         'server': '',
-        'ldap_role_id': ''  # Specific role must be created in rocketChat before
+        'ldap_role_id': '',  # Specific role must be created in rocketChat before
+        'exclude_users_for_sync': []  # ['admin','another_user']
     },
     'rocket_remaining_user_action': 'delete'  # delete, disable, none
 }
